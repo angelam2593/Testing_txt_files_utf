@@ -1,4 +1,3 @@
-
 <?php		
 						
 	$filename = $_FILES["file"]["tmp_name"];
@@ -15,17 +14,25 @@
 	echo "<br>";
 	
 	//words
+	$line = str_replace("\n", " ", $line);
 	$str = explode(" ", $line);
-	echo "<b>Broj na zborovi:</b> " . count($str);
-	echo "<br>";
-	
-	//numbers
 	$counter1 = 0;
 	foreach($str as $el){
 		if(is_numeric($el))
-			$counter1 ++;
+			continue;
+		else
+			$counter1++;
 	}
-	echo "<b>Broj na broevi:</b> " . $counter1 . "\n";
+	echo "<b>Broj na zborovi:</b> " . $counter1;
+	echo "<br>";
+	
+	//numbers
+	$counter2 = 0;
+	foreach($str as $el){
+		if(is_numeric($el))
+			$counter2 ++;
+	}
+	echo "<b>Broj na broevi:</b> " . $counter2 . "\n";
 	echo "<br>";
 	
 	//reading time
@@ -61,39 +68,50 @@
 	echo "<br>";
 	
 	//sentences
-	$remove_new_line = preg_replace('/[\ \n]+/', ' ', $contents);
-	function countSentences($str){
-		return preg_match_all('/[^\s](\.|\!|\?)(?!\w)/', $str, $match);
-	}								
-	$res = countSentences($remove_new_line);
-	echo "<b>Sentences: </b>" . $res; 
+	$counter3 = 0;
+	foreach($str as $s){
+		if(preg_match('/[.!?;]/u', $s)){
+			$counter3 += 1;
+		}
+	}
+	echo "<b>Sentences: </b>" . $counter3; 
 	echo "<br>";
 	
 	//short words
-	$counter1 = 0;
-	foreach($str as $s){
+	$counter4 = 0;
+	$str_i = preg_replace('#[[:punct:]]#', '', $str);
+	foreach($str_i as $s){
+		if(is_numeric($s))
+			continue;
 		if(ceil(strlen($s)/2)>=1 && ceil(strlen($s)/2)<=3)
-			$counter1 += 1;
+		{
+			$counter4 += 1;
+			//echo $s . " ";
+		}
 	}
 	
-	echo "<b>Short words: </b>" . $counter1;
+	echo "<b>Short words: </b>" . $counter4;
 	echo "<br>";
 	
 	//long words
-	$counter2 = 0;
-	foreach($str as $s){
+	$counter5 = 0;
+	$str_i = preg_replace('#[[:punct:]]#', '', $str);
+	foreach($str_i as $s){
 		if(ceil(strlen($s)/2)>=7)
-			$counter2 += 1;
+		{
+			$counter5 += 1;
+			//echo $s . " ";
+		}
+		
 	}
 	
-	echo "<b>Long words: </b>" . $counter2;
+	echo "<b>Long words: </b>" . $counter5;
 	echo "<br>";
 	
 	//whitespaces
 	$count_whitespaces = substr_count($contents, " ");
 	$count_newline = substr_count($contents, "\n");
 	$whitespaces = $count_whitespaces + $count_newline;
-	$whitespaces = $whitespaces - 1;
 	echo "<b>Whitespaces:</b>" . $whitespaces;
 	echo "<br>";
 	
@@ -114,7 +132,7 @@
 	$niza = array();
 	$sum = 0;
 	foreach($str as $s){
-		if(preg_match('/[.!?;]/u', $s)){
+		if(preg_match('/[.!?]/u', $s)){
 			$niza[] = $sum;
 			$sum = 0;
 		}
@@ -130,7 +148,7 @@
 	$niza = array();
 	$sum = 0;
 	foreach($str as $s){
-		if(preg_match('/[.!?;]/u', $s)){
+		if(preg_match('/[.!?]/u', $s)){
 			$niza[] = $sum;
 			$sum = 0;
 		}
@@ -144,10 +162,11 @@
 	
 	//average words length
 	$sum = 0;
-	foreach($str as $s){
+	$str_i = preg_replace('#[[:punct:]]#', '', $str);
+	foreach($str_i as $s){
 		$sum += floor(strlen($s)/2);
 	}
-	$pom1 = $sum/count($str);
+	$pom1 = $sum/count($str_i);
 	echo "<b>Average words length: </b>" . number_format((float)$pom1, 2, '.', '');
 	
 ?>
